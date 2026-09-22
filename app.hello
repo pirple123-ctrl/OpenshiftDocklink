@@ -1,0 +1,34 @@
+
+import streamlit as st
+
+# Configuración de la página (título que aparece en la pestaña del navegador)
+st.set_page_config(
+    page_title="Hello World Streamlit",
+    page_icon="👋",
+    layout="centered"
+)
+
+# Título principal de la aplicación
+st.title("👋 ¡Hola Mundo desde Streamlit!")
+
+# Subtítulo o descripción corta
+st.subheader("Tu contenedor Docker y Streamlit están comunicándose correctamente.")
+
+# Un texto simple con formato Markdown
+st.markdown("""
+Esta es una aplicación básica de prueba. Si puedes ver este mensaje, significa que:
+* El mapeo del puerto **8501** funciona.
+* La dirección del servidor está configurada correctamente en `0.0.0.0`.
+""")
+
+# Un componente interactivo para probar los WebSockets
+st.divider()
+st.write("### 🛠️ Prueba de Interactividad")
+
+nombre = st.text_input("Introduce tu nombre:")
+
+if nombre:
+    st.success(f"¡Un saludo especial para ti, {nombre}! El contenedor está respondiendo en tiempo real. 🚀")
+else:
+    st.info("Escribe tu nombre arriba para probar la interactividad en tiempo real.")
+

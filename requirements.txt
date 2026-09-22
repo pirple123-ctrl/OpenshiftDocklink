@@ -1,0 +1,6 @@
+streamlit
+pathlib
+docling
+logging
+datetime
+pandas
