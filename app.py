@@ -27,7 +27,8 @@ st.markdown("Sube tu archivo PDF para extraer texto, tablas y estructuras comple
 @st.cache_resource
 def obtener_convertidor():
     pipeline_options = PdfPipelineOptions()
-    pipeline_options.do_ocr = True
+    # Desactivar OCR de imágenes escaneadas para PDFs digitales nativos (evita el bug de descarga externa de RapidOCR)
+    pipeline_options.do_ocr = False
     pipeline_options.do_table_structure = True
     
     return DocumentConverter(
