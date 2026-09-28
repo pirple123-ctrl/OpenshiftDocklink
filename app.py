@@ -1,3 +1,4 @@
+
 import os
 import tempfile
 import streamlit as st
@@ -93,10 +94,6 @@ if archivo_subido is not None:
                     
                 with pestana_codigo:
                     st.code(contenido_markdown, language="markdown")
-
-            except Exception as e:
-                st.error(f"Ocurrió un error durante la conversión: {e}")
-                st.info("Asegúrate de que tu contenedor tenga asignados mínimo 8GB de memoria RAM.")
 
             except Exception as e:
                 st.error(f"Ocurrió un error durante la conversión: {e}")
