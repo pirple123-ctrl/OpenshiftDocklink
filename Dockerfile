@@ -31,13 +31,22 @@ RUN pip install --upgrade pip setuptools wheel \
     && pip install -r requirements.txt \
     && rm -rf /root/.cache/pip
 
+# Crear directorios y dar permisos globales a site-packages
+RUN mkdir -p /usr/local/lib/python3.11/site-packages/rapidocr/models \
+    && chmod -R 777 /usr/local/lib/python3.11/site-packages/rapidocr \
+    && chmod -R 777 /usr/local/lib/python3.11/site-packages
+
+# Pre-descargar modelos de Docling durante el build
+RUN python -c "from docling.document_converter import DocumentConverter; DocumentConverter()"
+
 # Copiar el resto del código
 COPY . .
 
-# Ajuste de permisos para OpenShift (SCC de usuario no root arbitrario)
-RUN chgrp -R 0 /app && \
-    chmod -R g=u /app && \
-    mkdir -p /tmp/huggingface /tmp/torch && \
+# Ajuste de permisos totales para OpenShift
+RUN chgrp -R 0 /app /usr/local/lib/python3.11 /tmp && \
+    chmod -R g=u /app /usr/local/lib/python3.11 /tmp && \
+    chmod -R 777 /usr/local/lib/python3.11/site-packages && \
+    mkdir -p /tmp/huggingface /tmp/torch /tmp/rapidocr && \
     chmod -R 777 /tmp
 
 EXPOSE 8501
