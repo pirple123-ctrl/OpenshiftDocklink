@@ -1,8 +1,16 @@
-
-import streamlit as st
-from docling.document_converter import DocumentConverter
-import tempfile
 import os
+import tempfile
+import streamlit as st
+
+# Configurar variables de entorno antes de importar librerías pesadas
+os.environ["HOME"] = "/tmp"
+os.environ["HF_HOME"] = "/tmp/huggingface"
+os.environ["TORCH_HOME"] = "/tmp/torch"
+os.environ["RAPIDOCR_CACHE_DIR"] = "/tmp/rapidocr"
+
+from docling.document_converter import DocumentConverter, PdfFormatOption
+from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.datamodel.base_models import InputFormat
 
 # 1. Configuración de la interfaz de usuario
 st.set_page_config(
@@ -17,10 +25,17 @@ st.markdown("Sube tu archivo PDF para extraer texto, tablas y estructuras comple
 # 2. Inicialización optimizada del modelo (Se ejecuta una sola vez gracias a la caché)
 @st.cache_resource
 def obtener_convertidor():
-    # Inicializa el motor de conversión y descarga/carga los pesos del modelo
-    return DocumentConverter()
+    pipeline_options = PdfPipelineOptions()
+    pipeline_options.do_ocr = True
+    pipeline_options.do_table_structure = True
+    
+    return DocumentConverter(
+        format_options={
+            InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
+        }
+    )
 
-with st.spinner("Inicializando modelos de Docling en el contenedor... (Esto puede tardar unos segundos la primera vez)"):
+with st.spinner("Inicializando modelos de Docling en el contenedor..."):
     convertidor = obtener_convertidor()
 
 # 3. Zona de carga del archivo
@@ -78,6 +93,10 @@ if archivo_subido is not None:
                     
                 with pestana_codigo:
                     st.code(contenido_markdown, language="markdown")
+
+            except Exception as e:
+                st.error(f"Ocurrió un error durante la conversión: {e}")
+                st.info("Asegúrate de que tu contenedor tenga asignados mínimo 8GB de memoria RAM.")
 
             except Exception as e:
                 st.error(f"Ocurrió un error durante la conversión: {e}")
